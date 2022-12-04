@@ -32,9 +32,6 @@ function Model(name) {
         gl.vertexAttribPointer(shProgram.iAttribVertex, 3, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(shProgram.iAttribVertex);
 
-        console.log('linePoints');
-        console.log(linePoints);
-        console.log(this.count);
         for (let i = 0; i < linePoints; i += 20) {
             gl.drawArrays(gl.LINE_STRIP, i, 20);
         }
@@ -124,12 +121,6 @@ function CreateSurfaceData()
         }
     }
 
-    console.log(vertexList);
-    
-
-
-
-    console.log(vertexList)
     return vertexList;
 }
 
