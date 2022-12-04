@@ -4,6 +4,8 @@ let gl;                         // The webgl context.
 let surface;                    // A surface model
 let shProgram;                  // A shader program
 let spaceball;                  // A SimpleRotator object that lets the user rotate the view by mouse.
+let linePoints;
+const scale = 0.3;
 
 function deg2rad(angle) {
     return angle * Math.PI / 180;
@@ -29,8 +31,17 @@ function Model(name) {
         gl.bindBuffer(gl.ARRAY_BUFFER, this.iVertexBuffer);
         gl.vertexAttribPointer(shProgram.iAttribVertex, 3, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(shProgram.iAttribVertex);
-   
-        gl.drawArrays(gl.LINE_STRIP, 0, this.count);
+
+        console.log('linePoints');
+        console.log(linePoints);
+        console.log(this.count);
+        for (let i = 0; i < linePoints; i += 20) {
+            gl.drawArrays(gl.LINE_STRIP, i, 20);
+        }
+
+        for (let i = linePoints; i < this.count - 3600; i += 3600) {
+            gl.drawArrays(gl.LINE_STRIP, i, 3600);
+        }
     }
 }
 
@@ -89,12 +100,36 @@ function draw() {
 function CreateSurfaceData()
 {
     let vertexList = [];
+    const a = 2;
+    const b = 2;
+    const n = 1;
+    linePoints = 0;
 
-    for (let i=0; i<360; i+=5) {
-        vertexList.push( Math.sin(deg2rad(i)), 1, Math.cos(deg2rad(i)) );
-        vertexList.push( Math.sin(deg2rad(i)), 0, Math.cos(deg2rad(i)) );
+    for (let u = 0; u <= 360; u += 3) {
+        for (let v = 0; v <= 2; v += 0.1) {
+            linePoints++;
+            const x = (a + b * Math.sin(n * u)) * Math.cos(u) - v * Math.sin(u);
+            const y = (a + b * Math.sin(n * u)) * Math.sin(u) + v * Math.cos(u);
+            const z = b * Math.cos(n * u);
+            vertexList.push(x * scale, y * scale, z * scale);
+        }
     }
 
+    for (let v = 0; v <= 2.1; v += 0.1) {
+        for (let u = 0; u <= 360; u += 0.1) {
+            const x = (a + b * Math.sin(n * u)) * Math.cos(u) - v * Math.sin(u);
+            const y = (a + b * Math.sin(n * u)) * Math.sin(u) + v * Math.cos(u);
+            const z = b * Math.cos(n * u);
+            vertexList.push(x * scale, y * scale, z * scale);
+        }
+    }
+
+    console.log(vertexList);
+    
+
+
+
+    console.log(vertexList)
     return vertexList;
 }
 
