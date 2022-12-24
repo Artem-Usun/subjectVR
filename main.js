@@ -4,8 +4,7 @@ let gl;                         // The webgl context.
 let surface;                    // A surface model
 let shProgram;                  // A shader program
 let spaceball;                  // A SimpleRotator object that lets the user rotate the view by mouse.
-let linePoints;
-const scale = 0.3;
+const scale = 0.4;
 
 function deg2rad(angle) {
     return angle * Math.PI / 180;
@@ -32,13 +31,7 @@ function Model(name) {
         gl.vertexAttribPointer(shProgram.iAttribVertex, 3, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(shProgram.iAttribVertex);
 
-        for (let i = 0; i < linePoints; i += 20) {
-            gl.drawArrays(gl.LINE_STRIP, i, 20);
-        }
-
-        for (let i = linePoints; i < this.count - 3600; i += 3600) {
-            gl.drawArrays(gl.LINE_STRIP, i, 3600);
-        }
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, this.count);
     }
 }
 
@@ -66,13 +59,13 @@ function ShaderProgram(name, program) {
  * (Note that the use of the above drawPrimitive function is not an efficient
  * way to draw with WebGL.  Here, the geometry is so simple that it doesn't matter.)
  */
-function draw() { 
+function draw() {
     gl.clearColor(0,0,0,1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    
+
     /* Set the values of the projection transformation */
     let projection = m4.perspective(Math.PI/8, 1, 8, 12); 
-    
+
     /* Get the view matrix from the SimpleRotator object.*/
     let modelView = spaceball.getViewMatrix();
 
@@ -81,13 +74,13 @@ function draw() {
 
     let matAccum0 = m4.multiply(rotateToPointZero, modelView );
     let matAccum1 = m4.multiply(translateToPointZero, matAccum0 );
-        
+
     /* Multiply the projection matrix times the modelview matrix to give the
        combined transformation matrix, and send that to the shader program. */
     let modelViewProjection = m4.multiply(projection, matAccum1 );
 
     gl.uniformMatrix4fv(shProgram.iModelViewProjectionMatrix, false, modelViewProjection );
-    
+
     /* Draw the six faces of a cube, with different colors. */
     gl.uniform4fv(shProgram.iColor, [1,0,0,1] );
 
@@ -100,24 +93,20 @@ function CreateSurfaceData()
     const a = 2;
     const b = 2;
     const n = 1;
-    linePoints = 0;
 
-    for (let u = 0; u <= 360; u += 3) {
+    for (let u = 0; u <= 360; u += 0.3) {
         for (let v = 0; v <= 2; v += 0.1) {
-            linePoints++;
             const x = (a + b * Math.sin(n * u)) * Math.cos(u) - v * Math.sin(u);
             const y = (a + b * Math.sin(n * u)) * Math.sin(u) + v * Math.cos(u);
             const z = b * Math.cos(n * u);
             vertexList.push(x * scale, y * scale, z * scale);
-        }
-    }
 
-    for (let v = 0; v <= 2.1; v += 0.1) {
-        for (let u = 0; u <= 360; u += 0.1) {
-            const x = (a + b * Math.sin(n * u)) * Math.cos(u) - v * Math.sin(u);
-            const y = (a + b * Math.sin(n * u)) * Math.sin(u) + v * Math.cos(u);
-            const z = b * Math.cos(n * u);
-            vertexList.push(x * scale, y * scale, z * scale);
+            const uNext = u + 0.3;
+            const vNext = v + 0.1;
+            const xNext = (a + b * Math.sin(n * uNext)) * Math.cos(uNext) - vNext * Math.sin(uNext);
+            const yNext = (a + b * Math.sin(n * uNext)) * Math.sin(uNext) + vNext * Math.cos(uNext);
+            const zNext = b * Math.cos(n * uNext);
+            vertexList.push(xNext * scale, yNext * scale, zNext * scale);
         }
     }
 
@@ -157,19 +146,19 @@ function createProgram(gl, vShader, fShader) {
     gl.compileShader(vsh);
     if ( ! gl.getShaderParameter(vsh, gl.COMPILE_STATUS) ) {
         throw new Error("Error in vertex shader:  " + gl.getShaderInfoLog(vsh));
-     }
+    }
     let fsh = gl.createShader( gl.FRAGMENT_SHADER );
     gl.shaderSource(fsh, fShader);
     gl.compileShader(fsh);
     if ( ! gl.getShaderParameter(fsh, gl.COMPILE_STATUS) ) {
-       throw new Error("Error in fragment shader:  " + gl.getShaderInfoLog(fsh));
+        throw new Error("Error in fragment shader:  " + gl.getShaderInfoLog(fsh));
     }
     let prog = gl.createProgram();
     gl.attachShader(prog,vsh);
     gl.attachShader(prog, fsh);
     gl.linkProgram(prog);
     if ( ! gl.getProgramParameter( prog, gl.LINK_STATUS) ) {
-       throw new Error("Link error in program:  " + gl.getProgramInfoLog(prog));
+        throw new Error("Link error in program:  " + gl.getProgramInfoLog(prog));
     }
     return prog;
 }
