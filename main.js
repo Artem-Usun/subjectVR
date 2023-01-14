@@ -125,7 +125,6 @@ function initGL() {
 
     shProgram.iAttribVertex              = gl.getAttribLocation(prog, "vertex");
     shProgram.iModelViewProjectionMatrix = gl.getUniformLocation(prog, "ModelViewProjectionMatrix");
-    shProgram.iLightPosition = gl.getUniformLocation(prog, "lightPosition");
     shProgram.iNormalMatrix = gl.getUniformLocation(prog, "normalMatrix");
 
     surface = new Model('Surface');
@@ -198,15 +197,6 @@ function init() {
     const xInput = document.getElementById("x");
     const yInput = document.getElementById("y");
     const zInput = document.getElementById("z");
-    const updateLight = function(){
-        const x = parseFloat(xInput.value);
-        const y = parseFloat(yInput.value);
-        const z = parseFloat(zInput.value);
-        gl.uniform3fv(shProgram.iLightPosition, [x, y, z]);
-        draw();
-    };
-    xInput.addEventListener("input", updateLight);
-    yInput.addEventListener("input", updateLight);
-    zInput.addEventListener("input", updateLight);
+
     draw();
 }
