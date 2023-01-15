@@ -89,32 +89,41 @@ function draw() {
     surface.Draw();
 }
 
-function CreateSurfaceData()
-{
+function CreateSurfaceData() {
     let vertexList = [];
-    const a = 2;
-    const b = 2;
-    const n = 1;
 
-    for (let u = 0; u <= 360; u += 0.3) {
-        for (let v = 0; v <= 2; v += 0.1) {
-            const x = (a + b * Math.sin(n * u)) * Math.cos(u) - v * Math.sin(u);
-            const y = (a + b * Math.sin(n * u)) * Math.sin(u) + v * Math.cos(u);
-            const z = b * Math.cos(n * u);
-            vertexList.push(x * scale, y * scale, z * scale);
+    let uStep = Math.PI * 2 / 50;
+    let vStep = 2 / 50;
 
-            const uNext = u + 0.3;
-            const vNext = v + 0.1;
-            const xNext = (a + b * Math.sin(n * uNext)) * Math.cos(uNext) - vNext * Math.sin(uNext);
-            const yNext = (a + b * Math.sin(n * uNext)) * Math.sin(uNext) + vNext * Math.cos(uNext);
-            const zNext = b * Math.cos(n * uNext);
-            vertexList.push(xNext * scale, yNext * scale, zNext * scale);
+    for (let u = 0; u <= Math.PI * 2; u += uStep) {
+        for (let v = 0; v <= 2; v += vStep) {
+            let vert = RuledRotorCylind(u, v)
+            let avert = RuledRotorCylind(u + uStep, v)
+            let bvert = RuledRotorCylind(u, v + vStep)
+            let cvert = RuledRotorCylind(u + uStep, v + vStep)
+
+            vertexList.push(vert.x, vert.y, vert.z)
+            vertexList.push(avert.x, avert.y, avert.z)
+            vertexList.push(bvert.x, bvert.y, bvert.z)
+
+            vertexList.push(avert.x, avert.y, avert.z)
+            vertexList.push(cvert.x, cvert.y, cvert.z)
+            vertexList.push(bvert.x, bvert.y, bvert.z)
         }
     }
 
     return vertexList;
 }
 
+function RuledRotorCylind(u, v) {
+    const a = 2
+    const b = 2
+    const n = 1
+    let x = (a + b * Math.sin(n * u)) * Math.cos(u) - v * Math.sin(u)
+    let y = (a + b * Math.sin(n * u)) * Math.sin(u) + v * Math.cos(u)
+    let z = b * Math.cos(n * u)
+    return { x: x * scale, y: y * scale, z: z * scale }
+}
 
 /* Initialize the WebGL context. Called from init() */
 function initGL() {
