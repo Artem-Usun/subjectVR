@@ -307,10 +307,6 @@ function init() {
 
     spaceball = new TrackballRotator(canvas, draw, 0);
 
-    const xInput = document.getElementById("x");
-    const yInput = document.getElementById("y");
-    const zInput = document.getElementById("z");
-
     draw();
 }
 
