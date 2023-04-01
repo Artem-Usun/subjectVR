@@ -5,6 +5,7 @@ let surface;                    // A surface model
 let shProgram;                  // A shader program
 let spaceball;                  // A SimpleRotator object that lets the user rotate the view by mouse.
 const scale = 0.4;
+let stereoCamera;
 
 let point;
 let texturePoint;
@@ -105,17 +106,38 @@ function ShaderProgram(name, program) {
     }
 }
 
+function leftFrustum(stereoCamera) {
+    const { eyeSeparation, convergence, aspectRatio, fov, near, far } = stereoCamera;
+    const top = near * Math.tan(fov / 2);
+    const bottom = -top;
 
-/* Draws a colored cube, along with a set of coordinate axes.
- * (Note that the use of the above drawPrimitive function is not an efficient
- * way to draw with WebGL.  Here, the geometry is so simple that it doesn't matter.)
- */
-function draw() {
-    gl.clearColor(0, 0, 0, 1);
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    const a = aspectRatio * Math.tan(fov / 2) * convergence;
+    const b = a - eyeSeparation / 2;
+    const c = a + eyeSeparation / 2;
 
+    const left = -b * near / convergence;
+    const right = c * near / convergence;
+
+    return m4.frustum(left, right, bottom, top, near, far);
+}
+
+function rightFrustum(stereoCamera) {
+    const { eyeSeparation, convergence, aspectRatio, fov, near, far } = stereoCamera;
+    const top = near * Math.tan(fov / 2);
+    const bottom = -top;
+
+    const a = aspectRatio * Math.tan(fov / 2) * convergence;
+    const b = a - eyeSeparation / 2;
+    const c = a + eyeSeparation / 2;
+
+    const left = -c * near / convergence;
+    const right = b * near / convergence;
+    return m4.frustum(left, right, bottom, top, near, far);
+}
+
+function drawLeft() {
     /* Set the values of the projection transformation */
-    let projection = m4.perspective(Math.PI / 8, 1, 8, 12);
+    let projection = leftFrustum(stereoCamera);
 
     /* Get the view matrix from the SimpleRotator object.*/
     let modelView = spaceball.getViewMatrix();
@@ -141,6 +163,49 @@ function draw() {
     gl.uniform3fv(shProgram.iTranslatePoint, [tr.x, tr.y, tr.z]);
     gl.uniform1f(shProgram.iRotateValue, 1100);
     point.DisplayPoint();
+
+}
+
+function drawRight() {
+    /* Set the values of the projection transformation */
+    let projection = rightFrustum(stereoCamera);
+
+    /* Get the view matrix from the SimpleRotator object.*/
+    let modelView = spaceball.getViewMatrix();
+
+    let rotateToPointZero = m4.axisRotation([0.707, 0.707, 0], 0.7);
+    let translateToPointZero = m4.translation(0, 0, -10);
+
+    let matAccum0 = m4.multiply(rotateToPointZero, modelView);
+    let matAccum1 = m4.multiply(translateToPointZero, matAccum0);
+
+    /* Multiply the projection matrix times the modelview matrix to give the
+       combined transformation matrix, and send that to the shader program. */
+    let modelViewProjection = m4.multiply(projection, matAccum1);
+
+    gl.uniformMatrix4fv(shProgram.iModelViewProjectionMatrix, false, modelViewProjection);
+
+    gl.uniform1i(shProgram.iTMU, 0);
+    gl.enable(gl.TEXTURE_2D);
+    gl.uniform2fv(shProgram.iTexturePoint, [texturePoint.x, texturePoint.y]);
+    gl.uniform1f(shProgram.iRotateValue, rotateValue);
+    surface.Draw();
+    let tr = RuledRotorCylind(map(texturePoint.x, 0, 1, 0, Math.PI * 2), map(texturePoint.y, 0, 1, 0, 2))
+    gl.uniform3fv(shProgram.iTranslatePoint, [tr.x, tr.y, tr.z]);
+    gl.uniform1f(shProgram.iRotateValue, 1100);
+    point.DisplayPoint();
+}
+
+/* Draws a colored cube, along with a set of coordinate axes.
+ * (Note that the use of the above drawPrimitive function is not an efficient
+ * way to draw with WebGL.  Here, the geometry is so simple that it doesn't matter.)
+ */
+function draw() {
+    gl.clearColor(0, 0, 0, 1);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    drawLeft();
+    drawRight();
+
 }
 
 function CreateSurfaceData() {
@@ -233,6 +298,17 @@ function initGL() {
 
     surface = new Model('Surface');
     surface.BufferData(CreateSurfaceData());
+
+    const ap = gl.canvas.width / gl.canvas.height;
+
+    stereoCamera = {
+        eyeSeparation: 0.004,
+        convergence: 1,
+        aspectRatio: ap,
+        fov: deg2rad(20),
+        near: 0.0001,
+        far: 20,
+    };
 
 
     LoadTexture()
