@@ -309,7 +309,7 @@ function initGL() {
         eyeSeparation: 0.004,
         convergence: 1,
         aspectRatio: ap,
-        fov: deg2rad(20),
+        fov: deg2rad(25),
         near: 0.0001,
         far: 20,
     };
@@ -384,6 +384,17 @@ function init() {
             "<p>Sorry, could not initialize the WebGL graphics context: " + e + "</p>";
         return;
     }
+
+    const videoElement = document.querySelector('video');
+
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(stream => {
+            videoElement.srcObject = stream;
+            videoElement.play();
+        })
+        .catch(error => {
+            console.error('Error accessing user media', error);
+        });
 
     const eyeSeparationInput = document.getElementById("eyeSeparation");
     const convergenceInput = document.getElementById("convergence");
