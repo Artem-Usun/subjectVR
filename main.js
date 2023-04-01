@@ -202,8 +202,12 @@ function drawRight() {
  */
 function draw() {
     gl.clearColor(0, 0, 0, 1);
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    // gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    gl.clear(gl.DEPTH_BUFFER_BIT);
+    gl.colorMask(true, false, false, true);
     drawLeft();
+    gl.clear(gl.DEPTH_BUFFER_BIT);
+    gl.colorMask(false, true, true, true);
     drawRight();
 
 }
