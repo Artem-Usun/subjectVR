@@ -385,6 +385,24 @@ function init() {
         return;
     }
 
+    const eyeSeparationInput = document.getElementById("eyeSeparation");
+    const convergenceInput = document.getElementById("convergence");
+    const fovInput = document.getElementById("fov");
+    const nearInput = document.getElementById("near");
+
+    const stereoCam = () => {
+        stereoCamera.eyeSeparation = parseFloat(eyeSeparationInput.value);
+        stereoCamera.convergence = parseFloat(convergenceInput.value);
+        stereoCamera.fov = deg2rad(parseFloat(fovInput.value));
+        stereoCamera.near = parseFloat(nearInput.value);
+        draw();
+    }
+
+    eyeSeparationInput.addEventListener("input", stereoCam);
+    convergenceInput.addEventListener("input", stereoCam);
+    fovInput.addEventListener("input", stereoCam);
+    nearInput.addEventListener("input", stereoCam);
+
     spaceball = new TrackballRotator(canvas, draw, 0);
 
     draw();
