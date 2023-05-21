@@ -385,16 +385,16 @@ function init() {
         return;
     }
 
-    const videoElement = document.querySelector('video');
-
-    navigator.mediaDevices.getUserMedia({ video: true })
-        .then(stream => {
-            videoElement.srcObject = stream;
-            videoElement.play();
-        })
-        .catch(error => {
-            console.error('Error accessing user media', error);
-        });
+    // const videoElement = document.querySelector('video');
+    //
+    // navigator.mediaDevices.getUserMedia({ video: true })
+    //     .then(stream => {
+    //         videoElement.srcObject = stream;
+    //         videoElement.play();
+    //     })
+    //     .catch(error => {
+    //         console.error('Error accessing user media', error);
+        // });
 
     const eyeSeparationInput = document.getElementById("eyeSeparation");
     const convergenceInput = document.getElementById("convergence");
@@ -415,6 +415,25 @@ function init() {
     nearInput.addEventListener("input", stereoCam);
 
     spaceball = new TrackballRotator(canvas, draw, 0);
+
+
+    // init magnetometer
+    if ("Accelerometer" in window) {
+      const magSensor = new Accelerometer({ frequency: 60 });
+      magSensor.addEventListener("reading", (e) => {
+        const rotationY = Math.atan2(magSensor.x, magSensor.z);
+        const rotationMat = m4.yRotation(rotationY);
+        console.dir(rotationMat);
+        console.log(e);
+        rotationMatrix = rotationMat;
+
+        draw();
+      });
+      magSensor.start();
+
+    } else {
+      console.error("Magnetometer API is not supported");
+    }
 
     draw();
 }
