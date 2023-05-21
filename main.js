@@ -148,6 +148,9 @@ function drawLeft() {
 
     let matAccum0 = m4.multiply(rotateToPointZero, modelView);
     let matAccum1 = m4.multiply(translateToPointZero, matAccum0);
+    if (rotationMatrix) {
+      matAccum1 = m4.multiply(matAccum1, rotationMatrix);
+    }
 
     /* Multiply the projection matrix times the modelview matrix to give the
        combined transformation matrix, and send that to the shader program. */
@@ -179,6 +182,9 @@ function drawRight() {
 
     let matAccum0 = m4.multiply(rotateToPointZero, modelView);
     let matAccum1 = m4.multiply(translateToPointZero, matAccum0);
+    if (rotationMatrix) {
+      matAccum1 = m4.multiply(matAccum1, rotationMatrix);
+    }
 
     /* Multiply the projection matrix times the modelview matrix to give the
        combined transformation matrix, and send that to the shader program. */
