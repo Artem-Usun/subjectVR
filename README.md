@@ -5,7 +5,7 @@ Project that accompanies VGGI credit module.
 Visit vggi-kpi.blogspot.com for more information!!
 
 
-https://user-images.githubusercontent.com/29780711/229284384-6e784480-ad60-49d2-9974-3f7c278f379e.mp4
+
+https://github.com/Artem-Usun/subjectVR/assets/29780711/ff0d2169-a750-4188-ba4b-f7e9e05a4126
 
 
-![image](artem.jpg)
