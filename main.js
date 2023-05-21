@@ -6,6 +6,7 @@ let shProgram;                  // A shader program
 let spaceball;                  // A SimpleRotator object that lets the user rotate the view by mouse.
 const scale = 0.4;
 let stereoCamera;
+let rotationMatrix;
 
 let point;
 let texturePoint;
