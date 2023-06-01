@@ -78,7 +78,7 @@ function CreateSphereSurface(r = 0.2) {
 }
 
 function sphereSurfaceDate(r, u, v) {
-  const offset = 1;
+  const offset = 2;
     let x = r * Math.sin(u) * Math.cos(v) + offset;
     let y = r * Math.sin(u) * Math.sin(v) + offset;
     let z = r * Math.cos(u) + offset;
@@ -435,9 +435,14 @@ function init() {
     if ("Accelerometer" in window) {
       const magSensor = new Accelerometer({ frequency: 60 });
       magSensor.addEventListener("reading", () => {
-        const rotationY = Math.atan2(magSensor.x, magSensor.z);
-        const rotationMat = m4.yRotation(rotationY * 2);
-        rotationMatrix = rotationMat;
+        const rotationX = Math.atan2(sensor.y, sensor.z);
+        const rotationY = Math.atan2(sensor.x, sensor.z);
+        const rotationZ = Math.atan2(sensor.y, sensor.x);
+        const mX = m4.xRotation(rotationX);
+        const mY = m4.yRotation(rotationY);
+        const mZ = m4.zRotation(rotationZ);
+        const acc = m4.multiply(mX, mY);
+        rotationMatrix = m4.multiply(acc, mZ);
 
         draw();
       });
