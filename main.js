@@ -12,6 +12,8 @@ let point;
 let texturePoint;
 let rotateValue;
 
+let audio = {};
+
 function deg2rad(angle) {
     return angle * Math.PI / 180;
 }
@@ -453,6 +455,48 @@ function init() {
     }
 
     draw();
+    initAudio();
+}
+
+async function initAudio() {
+  await new Promise(resolve => setTimeout(resolve, 3000));
+  const audioContext = new AudioContext();
+  const decodedAudioData = await fetch("/subjectVR/music.mp3")
+    .then(response => response.arrayBuffer())
+    .then(audioData => audioContext.decodeAudioData(audioData));
+
+  const source = audioContext.createBufferSource();
+  source.buffer = decodedAudioData;
+  source.connect(audioContext.destination);
+  source.start();
+  const panner = audioContext.createPanner();
+  const volume = audioContext.createGain();
+  volume.connect(panner);
+  const highpass = audioContext.createBiquadFilter();
+  highpass.type = "lowshelf";
+  highpass.frequency.value = 500;
+
+  audio.panner = panner;
+  audio.context = audioContext;
+  audio.filter = highpass;
+  audio.source = source;
+  source.connect(highpass);
+
+  window.setAudioPosition = (x, y, z) => {
+    panner.positionX.value = x;
+    panner.positionY.value = y;
+    panner.positionZ.value = z;
+  }
+
+  const toggle = document.querySelector("#toggleFilter");
+
+  toggle.onchange = e => {
+    if (e.target.checked) {
+      audio.filter.connect(audioContext.destination);
+    } else {
+      audio.filter.disconnect();
+    }
+  }
 }
 
 function LoadTexture() {
