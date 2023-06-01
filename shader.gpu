@@ -91,6 +91,6 @@ void main() {
     vec4 texColor = texture2D(tmu, v_texcoord);
     gl_FragColor = texColor;
     if(rotateValue>10.0){
-        gl_FragColor = vec4(0.,1.,0.,0.);
+        gl_FragColor = vec4(0.,1.,0.,1.);
     }
 }`;

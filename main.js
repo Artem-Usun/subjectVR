@@ -61,7 +61,7 @@ function Model(name) {
     }
 }
 
-function CreateSphereSurface(r = 0.1) {
+function CreateSphereSurface(r = 0.2) {
     let vertexList = [];
     let lon = -Math.PI;
     let lat = -Math.PI * 0.5;
@@ -78,9 +78,10 @@ function CreateSphereSurface(r = 0.1) {
 }
 
 function sphereSurfaceDate(r, u, v) {
-    let x = r * Math.sin(u) * Math.cos(v);
-    let y = r * Math.sin(u) * Math.sin(v);
-    let z = r * Math.cos(u);
+  const offset = 1;
+    let x = r * Math.sin(u) * Math.cos(v) + offset;
+    let y = r * Math.sin(u) * Math.sin(v) + offset;
+    let z = r * Math.cos(u) + offset;
     return { x: x, y: y, z: z };
 }
 
@@ -159,7 +160,6 @@ function drawLeft() {
     gl.uniformMatrix4fv(shProgram.iModelViewProjectionMatrix, false, modelViewProjection);
 
     gl.uniform1i(shProgram.iTMU, 0);
-    gl.enable(gl.TEXTURE_2D);
     gl.uniform2fv(shProgram.iTexturePoint, [texturePoint.x, texturePoint.y]);
     gl.uniform1f(shProgram.iRotateValue, rotateValue);
     surface.Draw();
@@ -193,7 +193,6 @@ function drawRight() {
     gl.uniformMatrix4fv(shProgram.iModelViewProjectionMatrix, false, modelViewProjection);
 
     gl.uniform1i(shProgram.iTMU, 0);
-    gl.enable(gl.TEXTURE_2D);
     gl.uniform2fv(shProgram.iTexturePoint, [texturePoint.x, texturePoint.y]);
     gl.uniform1f(shProgram.iRotateValue, rotateValue);
     surface.Draw();
@@ -327,8 +326,6 @@ function initGL() {
 
     point = new Model('Point');
     point.BufferData(CreateSphereSurface());
-
-    gl.enable(gl.DEPTH_TEST);
 }
 
 
