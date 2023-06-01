@@ -78,7 +78,7 @@ function CreateSphereSurface(r = 0.2) {
 }
 
 function sphereSurfaceDate(r, u, v) {
-  const offset = 2;
+  const offset = 1.8;
     let x = r * Math.sin(u) * Math.cos(v) + offset;
     let y = r * Math.sin(u) * Math.sin(v) + offset;
     let z = r * Math.cos(u) + offset;
