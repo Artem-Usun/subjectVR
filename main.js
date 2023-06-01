@@ -25,7 +25,6 @@ function Model(name) {
     this.iTextureBuffer = gl.createBuffer();
 
     this.BufferData = function (vertices) {
-    alert("changed")
 
         gl.bindBuffer(gl.ARRAY_BUFFER, this.iVertexBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STREAM_DRAW);
@@ -435,13 +434,13 @@ function init() {
     // init accelerometer
     if ("Accelerometer" in window) {
       const magSensor = new Accelerometer({ frequency: 60 });
-      magSensor.addEventListener("reading", () => {
-        const rotationX = Math.atan2(sensor.y, sensor.z);
-        const rotationY = Math.atan2(sensor.x, sensor.z);
-        const rotationZ = Math.atan2(sensor.y, sensor.x);
-        const mX = m4.xRotation(rotationX);
-        const mY = m4.yRotation(rotationY);
-        const mZ = m4.zRotation(rotationZ);
+      magSensor.addEventListener("reading", (e) => {
+        // const rotationX = Math.atan2(sensor.y, sensor.z);
+        // const rotationY = Math.atan2(sensor.x, sensor.z);
+        // const rotationZ = Math.atan2(sensor.y, sensor.x);
+        const mX = m4.xRotation(sensor.x);
+        const mY = m4.yRotation(sensor.y);
+        const mZ = m4.zRotation(sensor.z);
         const acc = m4.multiply(mX, mY);
         rotationMatrix = m4.multiply(acc, mZ);
 
