@@ -436,7 +436,7 @@ function init() {
       const magSensor = new Accelerometer({ frequency: 60 });
       magSensor.addEventListener("reading", () => {
         const rotationY = Math.atan2(magSensor.x, magSensor.z);
-        const rotationMat = m4.yRotation(rotationY);
+        const rotationMat = m4.yRotation(rotationY * 2);
         rotationMatrix = rotationMat;
 
         draw();
