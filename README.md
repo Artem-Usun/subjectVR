@@ -10,3 +10,7 @@ Visit vggi-kpi.blogspot.com for more information!!
 
 
 
+
+https://github.com/Artem-Usun/subjectVR/assets/29780711/a31a166f-4175-49af-922e-b2119fd6e511
+
+
